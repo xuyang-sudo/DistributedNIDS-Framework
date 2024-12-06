@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DistributedSnort-Framework</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="mt-5">DistributedSnort-Framework</h1>
+        <p class="lead">实时入侵检测系统</p>
+        <div id="alerts">
+            <!-- 动态加载报警信息 -->
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script>
+        // 示例：从 API 获取报警信息
+        fetch('/api/results')
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    data.data.forEach(alert => {
+                        $('#alerts').append(
+                            `<div class="alert alert-danger" role="alert">
+                                [${alert.timestamp}] ${alert.alert} from ${alert.source_ip} to ${alert.destination_ip}
+                            </div>`
+                        );
+                    });
+                }
+            });
+    </script>
+</body>
+</html>

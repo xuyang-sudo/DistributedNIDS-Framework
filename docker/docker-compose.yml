@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  snort:
+    build: ./docker/snort
+    container_name: snort
+    networks:
+      - snort_net
+    volumes:
+      - ./docker/snort/snort.conf:/etc/snort/snort.conf
+      - ./examples/snort_rules:/etc/snort/rules
+    ports:
+      - "5555:5555"
+
+  spark-master:
+    build: ./docker/spark
+    container_name: spark-master
+    networks:
+      - snort_net
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+
+  spark-worker:
+    build: ./docker/spark
+    container_name: spark-worker
+    networks:
+      - snort_net
+    depends_on:
+      - spark-master
+    environment:
+      - SPARK_MASTER_URL=spark://spark-master:7077
+    ports:
+      - "8081:8081"
+
+  nginx:
+    build: ./docker/nginx
+    container_name: nginx
+    networks:
+      - snort_net
+    ports:
+      - "80:80"
+
+  web_server1:
+    build: ./src/web_server
+    container_name: web_server1
+    networks:
+      - snort_net
+    ports:
+      - "8080:8080"
+
+  web_server2:
+    build: ./src/web_server
+    container_name: web_server2
+    networks:
+      - snort_net
+    ports:
+      - "8081:8080"
+
+networks:
+  snort_net:
+    driver: bridge

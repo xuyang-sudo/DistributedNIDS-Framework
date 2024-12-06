@@ -1,0 +1,2 @@
+# 示例规则：检测 SQL 注入
+alert tcp any any -> any 80 (msg:"SQL Injection Attempt"; content:"SELECT"; nocase; sid:1000001;)
